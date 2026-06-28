@@ -1,7 +1,7 @@
 Mission – Smart Knowledge Hub
 Projektidee
 
-Das Projekt „Smart Knowledge Hub“ ist eine lokale Anwendung zur Verwaltung von Links, Wissen und digitalen Ressourcen. Benutzer sollen Webseiten, Reiseideen, Videos und andere Quellen zentral speichern, kategorisieren und schnell wiederfinden können.
+Das Projekt „Synapsio“ ist eine lokale Anwendung zur Verwaltung von Links, Wissen und digitalen Ressourcen. Benutzer sollen Webseiten, Reiseideen, Videos und andere Quellen zentral speichern, kategorisieren und schnell wiederfinden können.
 
 Die Anwendung richtet sich vor allem an:
 
@@ -60,3 +60,4 @@ Die Hauptprobleme sind Informationschaos, schlechte Wiederauffindbarkeit und feh
 Eigene Entscheidung
 
 Der Fokus liegt auf Übersichtlichkeit, Tagging und schneller Suche.
+
