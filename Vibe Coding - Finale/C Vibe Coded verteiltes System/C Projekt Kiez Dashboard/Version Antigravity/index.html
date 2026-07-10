@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="de" class="dark">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>Stitch - Kiez Dashboard</title>
+  
+  <!-- Material Symbols Outlined -->
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  
+  <!-- CSS Link -->
+  <link href="./style.css" rel="stylesheet"/>
+  
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#3525cd",
+            "on-primary": "#ffffff",
+            "primary-container": "#4f46e5",
+            "on-primary-container": "#dad7ff",
+            "inverse-primary": "#c3c0ff",
+            
+            "secondary": "#9f402d",
+            "on-secondary": "#ffffff",
+            "secondary-container": "#fd876f",
+            "on-secondary-container": "#732010",
+            
+            "tertiary": "#5d4500",
+            "on-tertiary": "#ffffff",
+            "tertiary-container": "#7a5c00",
+            "on-tertiary-container": "#ffd77d",
+            
+            "error": "#ba1a1a",
+            "on-error": "#ffffff",
+            "error-container": "#ffdad6",
+            "on-error-container": "#93000a",
+            
+            "background": "#f8f9fa",
+            "on-background": "#191c1d",
+            
+            "surface": "#f8f9fa",
+            "surface-dim": "#d9dadb",
+            "surface-bright": "#f8f9fa",
+            "surface-container-lowest": "#ffffff",
+            "surface-container-low": "#f3f4f5",
+            "surface-container": "#edeeef",
+            "surface-container-high": "#e7e8e9",
+            "surface-container-highest": "#e1e3e4",
+            "on-surface": "#191c1d",
+            "on-surface-variant": "#464555",
+            "inverse-surface": "#2e3132",
+            "inverse-on-surface": "#f0f1f2",
+            "outline": "#777587",
+            "outline-variant": "#c7c4d8",
+            "surface-tint": "#4d44e3"
+          },
+          borderRadius: {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "2xl": "16px",
+            "3xl": "24px"
+          },
+          spacing: {
+            "margin-desktop": "40px",
+            "margin-mobile": "16px",
+            "gutter": "24px",
+            "unit": "8px"
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="font-sans antialiased pt-16 min-h-screen bg-slate-50 text-slate-900 dark:bg-zinc-950 dark:text-zinc-100 transition-colors duration-300">
+  
+  <!-- Top Header bar -->
+  <header class="bg-white/80 dark:bg-zinc-900/80 backdrop-blur-md fixed top-0 left-0 w-full h-16 z-50 flex justify-between items-center px-4 md:px-margin-desktop border-b border-outline-variant/30 dark:border-zinc-800 transition-colors">
+    <div class="flex items-center gap-2">
+      <!-- Decorative Stitch Pattern Icon -->
+      <span class="material-symbols-outlined text-primary dark:text-primary/80 text-3xl font-bold">grid_view</span>
+      <h1 class="text-xl md:text-2xl font-bold tracking-tight text-primary dark:text-white">
+        Stitch <span class="text-xs md:text-sm font-medium px-2 py-0.5 rounded-full bg-secondary/15 text-secondary dark:bg-secondary/30 dark:text-secondary-container align-middle ml-1">Kiez</span>
+      </h1>
+    </div>
+    
+    <!-- Location Initializer Form (PLZ & Stadt) -->
+    <form id="location-form" class="flex-1 max-w-lg mx-3 md:mx-8 flex items-center bg-slate-100 dark:bg-zinc-800 rounded-full px-3 py-1.5 border border-outline-variant/50 dark:border-zinc-700 focus-within:border-primary dark:focus-within:border-primary/80 transition-colors">
+      <span class="material-symbols-outlined text-on-surface-variant dark:text-zinc-400 mr-2">search</span>
+      <input id="location-input" class="bg-transparent border-none outline-none w-full text-sm text-on-surface dark:text-zinc-100 focus:ring-0 placeholder-on-surface-variant/70 dark:placeholder-zinc-500" placeholder="PLZ oder Stadt eingeben, z.B. 10115 Berlin" type="text" value="10115 Berlin"/>
+      
+      <!-- Geolocation Button -->
+      <button type="button" id="geolocation-btn" class="p-1 rounded-full text-on-surface-variant hover:text-primary dark:hover:text-primary hover:bg-slate-200 dark:hover:bg-zinc-700 transition-colors button-pulse flex items-center justify-center shrink-0" title="Standort automatisch ermitteln">
+        <span class="material-symbols-outlined text-xl">my_location</span>
+      </button>
+    </form>
+    
+    <!-- Profile & Header Actions -->
+    <div class="flex items-center gap-2 md:gap-4">
+      <!-- Settings gear icon (opens sidebar drawer on mobile, acts as hover indicator/action on desktop) -->
+      <button id="settings-mobile-btn" class="hover:bg-slate-100 dark:hover:bg-zinc-800 text-on-surface-variant dark:text-zinc-400 transition-colors p-2 rounded-full active:scale-95 duration-100 relative" title="Dashboard anpassen">
+        <span class="material-symbols-outlined">settings</span>
+        <!-- Small indicator dot -->
+        <span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-secondary"></span>
+      </button>
+      
+      <div class="hidden sm:block">
+        <img alt="User profile" class="w-8 h-8 rounded-full border-2 border-primary/50 object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBIuAZaL3PMFo1kE0j-QmjRwP-G7fqRa4q1ydBC3uXjem1gijXBNqeuTmXnJkalLR0rGJGRehX2JH1TaCdjxbAo1bBpWktM8Ykr7IPz239QjxqEwDpO1mSKHL-cBkbLxwfMqcCSMhmkGq7F1GeiFcQYzQli4_R2QTrfHCP1SUIzMRrPmOhSPaSmuUlosIVH_F7CDVdxmqgF6aL7-hcpMq110OHgabPvdq2NVY8g1WsfFSRvlAkbOMw"/>
+      </div>
+    </div>
+  </header>
+
+  <!-- Sidebar Overlay for Mobile Settings Drawer -->
+  <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 opacity-0 pointer-events-none transition-opacity duration-300 z-40 md:hidden"></div>
+
+  <div class="flex max-w-[1440px] mx-auto min-h-[calc(100vh-64px)] relative">
+    
+    <!-- Left Navigation / Settings Sidebar -->
+    <aside id="sidebar-panel" class="bg-white dark:bg-zinc-900 border-r border-outline-variant/30 dark:border-zinc-850 fixed left-0 top-16 h-[calc(100vh-64px)] w-72 z-40 flex flex-col translate-x-[-100%] md:translate-x-0 transition-transform duration-300">
+      
+      <!-- Settings Sidebar Header -->
+      <div class="p-6 border-b border-outline-variant/30 dark:border-zinc-800 border-dashed">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-lg bg-primary/10 dark:bg-primary/20 flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined text-primary dark:text-primary/90">tune</span>
+          </div>
+          <div>
+            <h2 class="text-md font-semibold text-primary dark:text-white">Dashboard-Optionen</h2>
+            <p class="text-xs text-on-surface-variant dark:text-zinc-400">Passe deine Ansichten an</p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Layout & Card Toggles Container -->
+      <div class="flex-1 overflow-y-auto py-4 px-4 space-y-6">
+        <!-- Visibility Section -->
+        <div>
+          <h3 class="text-xs font-semibold text-on-surface-variant dark:text-zinc-500 uppercase tracking-wider mb-3 px-2">Kacheln anzeigen</h3>
+          <nav class="space-y-1.5" id="sidebar-toggles">
+            <!-- Dynamic Toggles Generated by JS -->
+          </nav>
+        </div>
+
+        <div class="stitch-divider pt-4">
+          <h3 class="text-xs font-semibold text-on-surface-variant dark:text-zinc-500 uppercase tracking-wider mb-3 px-2">Darstellung</h3>
+          <!-- Theme Toggle -->
+          <div class="flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-slate-50 dark:hover:bg-zinc-800/50 transition-colors">
+            <div class="flex items-center gap-3 text-on-surface-variant dark:text-zinc-300">
+              <span class="material-symbols-outlined" id="theme-icon">dark_mode</span>
+              <span class="text-sm font-medium">Dunkelmodus</span>
+            </div>
+            <div class="flex items-center">
+              <input type="checkbox" id="darkmode-toggle" class="toggle-input hidden"/>
+              <label for="darkmode-toggle" class="toggle-track">
+                <div class="toggle-thumb"></div>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Save & Reset Buttons -->
+      <div class="p-4 border-t border-outline-variant/30 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900/50 flex flex-col gap-2">
+        <button id="save-layout-btn" class="w-full bg-primary hover:bg-primary/90 text-white py-2.5 px-4 rounded-full text-sm font-medium shadow-md hover:shadow-lg transition-all duration-150 flex items-center justify-center gap-2 button-pulse">
+          <span class="material-symbols-outlined text-sm">save</span>
+          Layout speichern
+        </button>
+        <button id="reset-layout-btn" class="w-full border border-outline-variant dark:border-zinc-700 text-on-surface-variant hover:text-red-600 dark:hover:text-red-400 py-2 px-4 rounded-full text-xs font-medium hover:bg-slate-100 dark:hover:bg-zinc-800 transition-all duration-150">
+          Standard-Layout wiederherstellen
+        </button>
+      </div>
+    </aside>
+    
+    <!-- Main Content Panel -->
+    <main class="flex-1 md:ml-72 p-4 md:p-8 min-h-[calc(100vh-64px)] pb-20 md:pb-8">
+      
+      <!-- Active Location Banner / Info -->
+      <div class="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white dark:bg-zinc-900 rounded-2xl p-4 md:p-6 card-shadow border border-outline-variant/20 dark:border-zinc-800">
+        <div>
+          <p class="text-xs text-on-surface-variant dark:text-zinc-500 font-semibold uppercase tracking-wider">Aktueller Kiez</p>
+          <h2 id="active-location-name" class="text-2xl font-bold text-slate-800 dark:text-zinc-100 flex items-center gap-2 mt-1">
+            <span class="material-symbols-outlined text-secondary text-3xl">location_on</span>
+            <span>10115 Berlin (Mitte)</span>
+          </h2>
+        </div>
+        <div class="flex items-center gap-3">
+          <span id="update-badge" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800 dark:bg-emerald-950/50 dark:text-emerald-300">
+            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+            Simulierte Echtzeitdaten
+          </span>
+        </div>
+      </div>
+      
+      <!-- Interactive Grid of Cards -->
+      <div class="grid grid-cols-1 xl:grid-cols-2 gap-gutter" id="dashboard-grid">
+        
+        <!-- Weather Card -->
+        <div class="bg-white dark:bg-zinc-900 rounded-2xl p-6 card-shadow border-t-4 border-dashed border-primary transition-all duration-300 relative border border-x-outline-variant/10 border-b-outline-variant/10 dark:border-zinc-800" data-id="weather" id="card-weather">
+          <div class="flex justify-between items-start mb-4">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-primary/10 dark:bg-primary/20 flex items-center justify-center">
+                <span class="material-symbols-outlined text-primary text-2xl">cloud</span>
+              </div>
+              <div>
+                <h3 class="text-lg font-bold text-slate-800 dark:text-zinc-100">Wetter & Kiez-Klima</h3>
+                <p class="text-xs text-on-surface-variant dark:text-zinc-400">Vorhersage & Echtzeit-Messergebnisse</p>
+              </div>
+            </div>
+            <span class="material-symbols-outlined text-outline dark:text-zinc-500 cursor-grab drag-handle p-1 hover:bg-slate-100 dark:hover:bg-zinc-800 rounded-lg hover:text-primary transition-colors" title="Ziehen zum Neuordnen">drag_indicator</span>
+          </div>
+          
+          <!-- Main Temp Display -->
+          <div class="flex items-center justify-between my-5">
+            <div>
+              <div id="weather-temp" class="text-5xl font-black tracking-tight text-primary dark:text-primary-container">18°C</div>
+              <div id="weather-condition" class="text-sm font-semibold text-on-surface-variant dark:text-zinc-300 mt-1">Teils bewölkt</div>
+            </div>
+            <div class="flex flex-col items-end">
+              <span id="weather-icon" class="material-symbols-outlined text-6xl text-amber-500 dark:text-amber-400">partly_cloudy_day</span>
+              <span class="text-xs text-outline dark:text-zinc-500 mt-1" id="weather-updated">Gerade aktualisiert</span>
+            </div>
+          </div>
+          
+          <!-- Weather Stats -->
+          <div class="grid grid-cols-2 gap-4 py-3 bg-slate-50 dark:bg-zinc-950/50 rounded-xl px-4 mb-5 border border-outline-variant/10 dark:border-zinc-800">
+            <div>
+              <div class="text-[10px] uppercase font-bold text-on-surface-variant dark:text-zinc-500">Windgeschwindigkeit</div>
+              <div class="text-sm font-bold text-slate-800 dark:text-zinc-100 mt-0.5" id="weather-wind">14 km/h (Nord-Ost)</div>
+            </div>
+            <div>
+              <div class="text-[10px] uppercase font-bold text-on-surface-variant dark:text-zinc-500">Luftfeuchtigkeit</div>
+              <div class="text-sm font-bold text-slate-800 dark:text-zinc-100 mt-0.5" id="weather-humidity">64%</div>
+            </div>
+          </div>
+          
+          <!-- 3-Day Forecast -->
+          <div class="grid grid-cols-3 gap-2 border-t border-outline-variant/30 dark:border-zinc-800 pt-4" id="weather-forecast">
+            <div class="text-center">
+              <div class="text-[10px] uppercase font-bold text-on-surface-variant dark:text-zinc-500 mb-1">Heute</div>
+              <span class="material-symbols-outlined text-secondary text-2xl mb-1 block">partly_cloudy_day</span>
+              <div class="text-xs font-bold text-slate-800 dark:text-zinc-200">18° / 12°</div>
+            </div>
+            <div class="text-center">
+              <div class="text-[10px] uppercase font-bold text-on-surface-variant dark:text-zinc-500 mb-1">Morgen</div>
+              <span class="material-symbols-outlined text-amber-500 text-2xl mb-1 block">sunny</span>
+              <div class="text-xs font-bold text-slate-800 dark:text-zinc-200">22° / 14°</div>
+            </div>
+            <div class="text-center">
+              <div class="text-[10px] uppercase font-bold text-on-surface-variant dark:text-zinc-500 mb-1">Freitag</div>
+              <span class="material-symbols-outlined text-primary text-2xl mb-1 block">rainy</span>
+              <div class="text-xs font-bold text-slate-800 dark:text-zinc-200">16° / 10°</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Relax & Wellness Card -->
+        <div class="bg-white dark:bg-zinc-900 rounded-2xl p-6 card-shadow border-t-4 border-dashed border-secondary transition-all duration-300 relative border border-x-outline-variant/10 border-b-outline-variant/10 dark:border-zinc-800" data-id="wellness" id="card-wellness">
+          <div class="flex justify-between items-start mb-4">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-secondary/10 dark:bg-secondary/20 flex items-center justify-center">
+                <span class="material-symbols-outlined text-secondary text-2xl">self_improvement</span>
+              </div>
+              <div>
+                <h3 class="text-lg font-bold text-slate-800 dark:text-zinc-100">Relax & Wellness</h3>
+                <p class="text-xs text-on-surface-variant dark:text-zinc-400">Thermen, Spas & Entspannungsorte in der Nähe</p>
+              </div>
+            </div>
+            <span class="material-symbols-outlined text-outline dark:text-zinc-500 cursor-grab drag-handle p-1 hover:bg-slate-100 dark:hover:bg-zinc-800 rounded-lg hover:text-primary transition-colors" title="Ziehen zum Neuordnen">drag_indicator</span>
+          </div>
+          
+          <ul class="space-y-4" id="wellness-list">
+            <!-- Dynamically populated POI entries -->
+          </ul>
+        </div>
+
+        <!-- Nerd & Gaming Card -->
+        <div class="bg-white dark:bg-zinc-900 rounded-2xl p-6 card-shadow border-t-4 border-dashed border-primary transition-all duration-300 relative border border-x-outline-variant/10 border-b-outline-variant/10 dark:border-zinc-800" data-id="gaming" id="card-gaming">
+          <div class="flex justify-between items-start mb-4">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-primary/10 dark:bg-primary/20 flex items-center justify-center">
+                <span class="material-symbols-outlined text-primary text-2xl">sports_esports</span>
+              </div>
+              <div>
+                <h3 class="text-lg font-bold text-slate-800 dark:text-zinc-100">Nerd & Gaming</h3>
+                <p class="text-xs text-on-surface-variant dark:text-zinc-400">Tabletop-Treffs, Spielecafés & Geeking-Hubs</p>
+              </div>
+            </div>
+            <span class="material-symbols-outlined text-outline dark:text-zinc-500 cursor-grab drag-handle p-1 hover:bg-slate-100 dark:hover:bg-zinc-800 rounded-lg hover:text-primary transition-colors" title="Ziehen zum Neuordnen">drag_indicator</span>
+          </div>
+          
+          <ul class="space-y-4" id="gaming-list">
+            <!-- Dynamically populated POI entries -->
+          </ul>
+        </div>
+
+        <!-- Food & Travel Card -->
+        <div class="bg-white dark:bg-zinc-900 rounded-2xl p-6 card-shadow border-t-4 border-dashed border-secondary transition-all duration-300 relative border border-x-outline-variant/10 border-b-outline-variant/10 dark:border-zinc-800" data-id="food" id="card-food">
+          <div class="flex justify-between items-start mb-4">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-secondary/10 dark:bg-secondary/20 flex items-center justify-center">
+                <span class="material-symbols-outlined text-secondary text-2xl">restaurant</span>
+              </div>
+              <div>
+                <h3 class="text-lg font-bold text-slate-800 dark:text-zinc-100">Food & Travel</h3>
+                <p class="text-xs text-on-surface-variant dark:text-zinc-400">Authentische asiatische Küche im aktuellen Kiez</p>
+              </div>
+            </div>
+            <span class="material-symbols-outlined text-outline dark:text-zinc-500 cursor-grab drag-handle p-1 hover:bg-slate-100 dark:hover:bg-zinc-800 rounded-lg hover:text-primary transition-colors" title="Ziehen zum Neuordnen">drag_indicator</span>
+          </div>
+          
+          <ul class="space-y-4" id="food-list">
+            <!-- Dynamically populated POI entries -->
+          </ul>
+        </div>
+
+        <!-- Tech & Work Card -->
+        <div class="bg-white dark:bg-zinc-900 rounded-2xl p-6 card-shadow border-t-4 border-dashed border-tertiary-container transition-all duration-300 relative border border-x-outline-variant/10 border-b-outline-variant/10 dark:border-zinc-800" data-id="tech" id="card-tech">
+          <div class="flex justify-between items-start mb-4">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-tertiary-container/10 dark:bg-tertiary-container/20 flex items-center justify-center">
+                <span class="material-symbols-outlined text-tertiary-container dark:text-tertiary-fixed text-2xl">laptop_mac</span>
+              </div>
+              <div>
+                <h3 class="text-lg font-bold text-slate-800 dark:text-zinc-100">Tech & Work</h3>
+                <p class="text-xs text-on-surface-variant dark:text-zinc-400">Coworking-Spaces, IT-Hubs & ruhige Lernecken</p>
+              </div>
+            </div>
+            <span class="material-symbols-outlined text-outline dark:text-zinc-500 cursor-grab drag-handle p-1 hover:bg-slate-100 dark:hover:bg-zinc-800 rounded-lg hover:text-primary transition-colors" title="Ziehen zum Neuordnen">drag_indicator</span>
+          </div>
+          
+          <ul class="space-y-4" id="tech-list">
+            <!-- Dynamically populated POI entries -->
+          </ul>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Mobile Footer / Quick bar -->
+  <footer class="bg-white dark:bg-zinc-900 fixed bottom-0 left-0 w-full z-30 flex justify-between items-center px-6 py-3 border-t border-outline-variant/30 dark:border-zinc-800 md:hidden transition-colors shadow-2xl">
+    <span class="text-xs text-on-surface-variant dark:text-zinc-400" id="footer-update-text">Standort: 10115 Berlin</span>
+    <div class="flex gap-4">
+      <a class="text-primary dark:text-primary/80 text-xs font-semibold hover:underline" href="#">Impressum</a>
+      <a class="text-on-surface-variant dark:text-zinc-400 text-xs hover:underline" href="#">Datenschutz</a>
+    </div>
+  </footer>
+
+  <!-- Toast Notification System -->
+  <div id="toast-container" class="fixed bottom-20 md:bottom-6 right-6 z-50 flex flex-col gap-2"></div>
+
+  <!-- SortableJS Library -->
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+
+  <!-- Dashboard JavaScript Logic -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Configuration details for widgets
+      const widgetInfo = [
+        { id: 'weather', label: 'Wetter & Klima', icon: 'cloud' },
+        { id: 'wellness', label: 'Relax & Wellness', icon: 'self_improvement' },
+        { id: 'gaming', label: 'Nerd & Gaming', icon: 'sports_esports' },
+        { id: 'food', label: 'Food & Travel', icon: 'restaurant' },
+        { id: 'tech', label: 'Tech & Work', icon: 'laptop_mac' }
+      ];
+
+      // Kiez Mock Data for cities
+      const kiezData = {
+        "berlin": {
+          location: "10115 Berlin (Mitte)",
+          weather: {
+            temp: "18°C",
+            condition: "Teils bewölkt",
+            icon: "partly_cloudy_day",
+            wind: "14 km/h (Nord-Ost)",
+            humidity: "64%",
+            forecast: [
+              { day: "Heute", icon: "partly_cloudy_day", temp: "18° / 12°" },
+              { day: "Morgen", icon: "sunny", temp: "22° / 14°" },
+              { day: "Freitag", icon: "rainy", temp: "16° / 10°" }
+            ]
+          },
+          pois: {
+            wellness: [
+              { name: "Liquidrom", rating: "4.5", reviews: "2100", category: "Thermalbad & Saunen", dist: "2.1 km", tags: ["Salzwasser", "DJ-Abende"], img: "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=150&q=80" },
+              { name: "Vabali Spa Berlin", rating: "4.8", reviews: "4500", category: "Premium Spa & Wellness", dist: "1.4 km", tags: ["Bali-Stil", "Saunagarten"], img: "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?auto=format&fit=crop&w=150&q=80" },
+              { name: "Stadtbad Mitte", rating: "4.4", reviews: "380", category: "Historisches Hallenbad", dist: "0.8 km", tags: ["50m-Bahn", "Jugendstil"], img: "" }
+            ],
+            gaming: [
+              { name: "Spielwiese Berlin", rating: "4.7", reviews: "420", category: "Spielecafé & Ludothek", dist: "2.8 km", tags: ["Spieleverleih", "Kaffee & Kuchen"], img: "https://images.unsplash.com/photo-1610890716171-6b1bb98ffd09?auto=format&fit=crop&w=150&q=80" },
+              { name: "Battlefield Berlin", rating: "4.8", reviews: "190", category: "Tabletop & Miniaturen Laden", dist: "3.2 km", tags: ["Warhammer", "Mal-Ecke"], img: "" },
+              { name: "Interface Bar", rating: "4.6", reviews: "350", category: "Esports & Gaming Pub", dist: "1.9 km", tags: ["Cocktails", "Konsolen-Ecke"], img: "" }
+            ],
+            food: [
+              { name: "Monsieur Vuong", rating: "4.5", reviews: "3800", category: "Vietnamesisches Restaurant", dist: "0.9 km", tags: ["Pho", "Schanzen-Vibe"], img: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=150&q=80" },
+              { name: "Hamy Cafe", rating: "4.6", reviews: "1400", category: "Asiatisches Bistro", dist: "2.4 km", tags: ["Curry", "Günstig"], img: "" },
+              { name: "Dao Restaurant", rating: "4.4", reviews: "210", category: "Thailändische Küche", dist: "1.7 km", tags: ["Pad Thai", "Gastgarten"], img: "" }
+            ],
+            tech: [
+              { name: "St. Oberholz", rating: "4.3", reviews: "1150", category: "Coworking Café", dist: "0.7 km", tags: ["Schnelles WLAN", "Koffein-Hub"], img: "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=150&q=80" },
+              { name: "Mindspace Krausenstraße", rating: "4.6", reviews: "240", category: "Flexible Workspace Hub", dist: "1.8 km", tags: ["Dachterrasse", "Free Coffee"], img: "" },
+              { name: "betahaus Kreuzberg", rating: "4.5", reviews: "520", category: "Macher & IT Startup Hub", dist: "2.9 km", tags: ["Hardware-Lab", "Community"], img: "" }
+            ]
+          }
+        },
+        "münchen": {
+          location: "80331 München (Altstadt)",
+          weather: {
+            temp: "22°C",
+            condition: "Sonnig",
+            icon: "sunny",
+            wind: "8 km/h (Süd)",
+            humidity: "52%",
+            forecast: [
+              { day: "Heute", icon: "sunny", temp: "22° / 14°" },
+              { day: "Morgen", icon: "sunny", temp: "25° / 15°" },
+              { day: "Freitag", icon: "partly_cloudy_day", temp: "20° / 12°" }
+            ]
+          },
+          pois: {
+            wellness: [
+              { name: "Müller'sches Volksbad", rating: "4.7", reviews: "1850", category: "Historisches Jugendstil-Bad", dist: "1.1 km", tags: ["Dampfbad", "Römisch-Irisch"], img: "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=150&q=80" },
+              { name: "Therme Erding", rating: "4.8", reviews: "12800", category: "Europas größte Thermenwelt", dist: "32.0 km", tags: ["Riesenrutschen", "Palmenparadies"], img: "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?auto=format&fit=crop&w=150&q=80" },
+              { name: "Südbad München", rating: "4.3", reviews: "420", category: "Hallenbad & Freibad", dist: "2.5 km", tags: ["Liegewiese", "Finnische Sauna"], img: "" }
+            ],
+            gaming: [
+              { name: "Funtainment", rating: "4.8", reviews: "620", category: "Spiele & Tabletop Fachgeschäft", dist: "0.8 km", tags: ["Magic: The Gathering", "Brettspieltreff"], img: "https://images.unsplash.com/photo-1610890716171-6b1bb98ffd09?auto=format&fit=crop&w=150&q=80" },
+              { name: "Item Shop München", rating: "4.7", reviews: "120", category: "Nerd-Merch & Pen&Paper", dist: "1.3 km", tags: ["Zubehör", "D&D Würfel"], img: "" },
+              { name: "Games Garden", rating: "4.5", reviews: "210", category: "Retro Arcade Bar", dist: "2.2 km", tags: ["Flipper", "Retro-Konsolen"], img: "" }
+            ],
+            food: [
+              { name: "Krua Thai", rating: "4.5", reviews: "560", category: "Authentische Garküche", dist: "0.6 km", tags: ["Som Tam", "Scharf"], img: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=150&q=80" },
+              { name: "Condesa", rating: "4.3", reviews: "890", category: "Mexikanisch-Asiatischer Fusion-Snack", dist: "0.3 km", tags: ["Burritos", "Tacos"], img: "" },
+              { name: "Chop Chop Asian Streetfood", rating: "4.4", reviews: "320", category: "Bao Buns & Wok", dist: "1.2 km", tags: ["Schneller Service", "Veggie"], img: "" }
+            ],
+            tech: [
+              { name: "WERK1", rating: "4.6", reviews: "380", category: "Startup Incubator & Coworking", dist: "2.4 km", tags: ["IT-Events", "Café-Lounge"], img: "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=150&q=80" },
+              { name: "Impact Hub Munich", rating: "4.5", reviews: "190", category: "Social Business Coworking", dist: "3.1 km", tags: ["Community-Events", "Meeting-Boxen"], img: "" },
+              { name: "Café Kosmos", rating: "4.4", reviews: "1200", category: "Kult-Kreativtreff mit Espresso & Bier", dist: "0.9 km", tags: ["Günstig", "IT-Freelancer Vibe"], img: "" }
+            ]
+          }
+        },
+        "hamburg": {
+          location: "20359 Hamburg (St. Pauli)",
+          weather: {
+            temp: "15°C",
+            condition: "Regnerisch",
+            icon: "rainy",
+            wind: "28 km/h (West-Nordwest)",
+            humidity: "85%",
+            forecast: [
+              { day: "Heute", icon: "rainy", temp: "15° / 11°" },
+              { day: "Morgen", icon: "partly_cloudy_day", temp: "17° / 12°" },
+              { day: "Freitag", icon: "rainy", temp: "14° / 9°" }
+            ]
+          },
+          pois: {
+            wellness: [
+              { name: "Barth-Therme & Spa Hamburg", rating: "4.6", reviews: "1200", category: "Wellnesstempel im Hafen", dist: "3.4 km", tags: ["Hafenzugang", "Solegrotte"], img: "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=150&q=80" },
+              { name: "Kaifu-Lodge Spa", rating: "4.7", reviews: "890", category: "Premium Wellness & Sauna", dist: "2.1 km", tags: ["Kaltbecken", "Kaminfeuer"], img: "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?auto=format&fit=crop&w=150&q=80" },
+              { name: "Bäderland Holthusenbad", rating: "4.5", reviews: "1450", category: "Historisches Thermalbad", dist: "4.8 km", tags: ["Thermenbereich", "Wellenbad"], img: "" }
+            ],
+            gaming: [
+              { name: "Atlantis Hamburg", rating: "4.8", reviews: "730", category: "Tabletop, Magic & Rollenspiel", dist: "3.0 km", tags: ["Spieletische", "Turniere"], img: "https://images.unsplash.com/photo-1610890716171-6b1bb98ffd09?auto=format&fit=crop&w=150&q=80" },
+              { name: "Würfel & Zucker", rating: "4.9", reviews: "640", category: "Brettspiel-Café & Restaurant", dist: "4.5 km", tags: ["2000 Spiele", "Vegane Burger"], img: "" },
+              { name: "Plattenkiste Hamburg", rating: "4.6", reviews: "180", category: "Nerd-Kultur & Comics", dist: "1.5 km", tags: ["Merchandise", "Raritäten"], img: "" }
+            ],
+            food: [
+              { name: "Quan Do", rating: "4.6", reviews: "4200", category: "Vietnamesisches Streetfood", dist: "2.8 km", tags: ["Schnell & Lecker", "Sommerrollen"], img: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=150&q=80" },
+              { name: "Coa Restaurant", rating: "4.3", reviews: "750", category: "Wok & Dim Sum Bar", dist: "1.9 km", tags: ["Asia-Fusion", "Open Kitchen"], img: "" },
+              { name: "Tai Tan", rating: "4.5", reviews: "380", category: "Thailändische Spezialitäten", dist: "0.8 km", tags: ["Edel-Thai", "Echtes Curry"], img: "" }
+            ],
+            tech: [
+              { name: "betahaus Hamburg", rating: "4.6", reviews: "340", category: "Coworking Space", dist: "1.2 km", tags: ["Maker-Space", "Kaffee-Bar"], img: "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=150&q=80" },
+              { name: "Mindspace Rödingsmarkt", rating: "4.7", reviews: "190", category: "Stylischer IT-Workspace", dist: "2.3 km", tags: ["Historisches Gebäude", "Lounges"], img: "" },
+              { name: "Elbgold Schanzenviertel", rating: "4.5", reviews: "2200", category: "Kaffeerösterei & IT-Arbeitsplätze", dist: "1.0 km", tags: ["Eigene Röstung", "WLAN-Ecken"], img: "" }
+            ]
+          }
+        },
+        "köln": {
+          location: "50667 Köln (Altstadt)",
+          weather: {
+            temp: "20°C",
+            condition: "Wolkig",
+            icon: "cloudy",
+            wind: "11 km/h (Südwest)",
+            humidity: "70%",
+            forecast: [
+              { day: "Heute", icon: "cloudy", temp: "20° / 13°" },
+              { day: "Morgen", icon: "partly_cloudy_day", temp: "21° / 14°" },
+              { day: "Freitag", icon: "sunny", temp: "23° / 15°" }
+            ]
+          },
+          pois: {
+            wellness: [
+              { name: "Claudius Therme", rating: "4.6", reviews: "4900", category: "Mineral-Therme im Rheinpark", dist: "3.8 km", tags: ["Heilwasser", "Domblick"], img: "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=150&q=80" },
+              { name: "Neptunbad", rating: "4.8", reviews: "2100", category: "Premium Spa & Sports Club", dist: "2.5 km", tags: ["Japanische Sauna", "Kulturdenkmal"], img: "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?auto=format&fit=crop&w=150&q=80" },
+              { name: "Agrippabad", rating: "4.3", reviews: "1820", category: "Erlebnis- & Wellnessbad", dist: "1.2 km", tags: ["10m-Sprungturm", "Vier saunen"], img: "" }
+            ],
+            gaming: [
+              { name: "Brave New World", rating: "4.8", reviews: "490", category: "Comic & Spiele-Paradies", dist: "0.5 km", tags: ["Comics", "Tabletop Zubehör"], img: "https://images.unsplash.com/photo-1610890716171-6b1bb98ffd09?auto=format&fit=crop&w=150&q=80" },
+              { name: "Hiveworld Köln", rating: "4.7", reviews: "380", category: "Karten- & Brettspielladen", dist: "0.9 km", tags: ["Turniersaal", "Sammelkarten"], img: "" },
+              { name: "Lost Level", rating: "4.9", reviews: "520", category: "Gaming Bar & Nerd-Heimat", dist: "1.8 km", tags: ["Gaming Drinks", "Turniere"], img: "" }
+            ],
+            food: [
+              { name: "Takezo Ramen", rating: "4.6", reviews: "1900", category: "Japanische Nudelsuppen", dist: "0.4 km", tags: ["Ramen", "Authentische Küche"], img: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=150&q=80" },
+              { name: "Lu Vietnamese Cuisine", rating: "4.5", reviews: "850", category: "Vietnamesisches Restaurant", dist: "1.2 km", tags: ["Pho", "Bao Burger"], img: "" },
+              { name: "Krua Thai Köln", rating: "4.4", reviews: "320", category: "Traditionelle Garküche", dist: "1.5 km", tags: ["Pad See Ew", "Scharf"], img: "" }
+            ],
+            tech: [
+              { name: "Startplatz Köln", rating: "4.6", reviews: "480", category: "Startup Incubator & Coworking Hub", dist: "1.7 km", tags: ["Mentoring", "Großes Netzwerk"], img: "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=150&q=80" },
+              { name: "Ehrentribüne Coworking", rating: "4.5", reviews: "90", category: "Ruhiger Workspace am Stadion", dist: "4.2 km", tags: ["Besprechungsraum", "Inspirierend"], img: "" },
+              { name: "Woyton Kaffeebar", rating: "4.4", reviews: "750", category: "Kreativcafé für Freelancer", dist: "0.8 km", tags: ["Schnelles Internet", "Bester Flat White"], img: "" }
+            ]
+          }
+        }
+      };
+
+      // Default State
+      let state = {
+        order: ['weather', 'wellness', 'gaming', 'food', 'tech'],
+        visibility: {
+          weather: true,
+          wellness: true,
+          gaming: true,
+          food: true,
+          tech: true
+        },
+        dark: true,
+        location: "Berlin"
+      };
+
+      // HTML Elements
+      const sidebarToggles = document.getElementById('sidebar-toggles');
+      const dashboardGrid = document.getElementById('dashboard-grid');
+      const darkmodeToggle = document.getElementById('darkmode-toggle');
+      const locationForm = document.getElementById('location-form');
+      const locationInput = document.getElementById('location-input');
+      const activeLocationName = document.getElementById('active-location-name');
+      const footerUpdateText = document.getElementById('footer-update-text');
+      const settingsMobileBtn = document.getElementById('settings-mobile-btn');
+      const sidebarPanel = document.getElementById('sidebar-panel');
+      const sidebarOverlay = document.getElementById('sidebar-overlay');
+      const themeIcon = document.getElementById('theme-icon');
+      const saveLayoutBtn = document.getElementById('save-layout-btn');
+      const resetLayoutBtn = document.getElementById('reset-layout-btn');
+      const geolocationBtn = document.getElementById('geolocation-btn');
+
+      // Load State from LocalStorage
+      const loadState = () => {
+        const savedState = localStorage.getItem('stitchDashboardState_Antigravity');
+        if (savedState) {
+          try {
+            const parsed = JSON.parse(savedState);
+            // Deep merge to ensure all properties exist
+            state = { ...state, ...parsed };
+            state.visibility = { ...state.visibility, ...parsed.visibility };
+            if (parsed.order && parsed.order.length > 0) {
+              state.order = parsed.order;
+            }
+          } catch (e) {
+            console.error("Fehler beim Laden des States", e);
+          }
+        }
+      };
+
+      // Toast Notification function
+      const showToast = (message, type = 'success') => {
+        const toastContainer = document.getElementById('toast-container');
+        const toast = document.createElement('div');
+        toast.className = `flex items-center gap-2 px-4 py-3 rounded-xl shadow-lg border text-sm font-semibold transition-all duration-300 transform translate-y-2 opacity-0 fade-in`;
+        
+        let icon = 'check_circle';
+        let bgClass = 'bg-white dark:bg-zinc-900 border-outline-variant/30 text-emerald-600 dark:text-emerald-400';
+        
+        if (type === 'info') {
+          icon = 'info';
+          bgClass = 'bg-white dark:bg-zinc-900 border-outline-variant/30 text-primary dark:text-primary-container';
+        } else if (type === 'error') {
+          icon = 'error';
+          bgClass = 'bg-red-50 dark:bg-red-950/20 border-red-200 dark:border-red-900 text-red-600 dark:text-red-400';
+        }
+        
+        toast.className += ` ${bgClass}`;
+        toast.innerHTML = `
+          <span class="material-symbols-outlined">${icon}</span>
+          <span>${message}</span>
+        `;
+        
+        toastContainer.appendChild(toast);
+        
+        // Remove toast after 3.5s
+        setTimeout(() => {
+          toast.classList.add('opacity-0', 'translate-y-[-10px]');
+          setTimeout(() => {
+            toast.remove();
+          }, 300);
+        }, 3500);
+      };
+
+      // Set/Update active location UI
+      const updateLocationContent = (searchQuery) => {
+        const cleanQuery = searchQuery.trim().toLowerCase();
+        let matchedCity = 'berlin';
+        
+        if (cleanQuery.includes('münchen') || cleanQuery.includes('munich') || cleanQuery.includes('80331') || cleanQuery.includes('munchen')) {
+          matchedCity = 'münchen';
+        } else if (cleanQuery.includes('hamburg') || cleanQuery.includes('20359')) {
+          matchedCity = 'hamburg';
+        } else if (cleanQuery.includes('köln') || cleanQuery.includes('cologne') || cleanQuery.includes('50667') || cleanQuery.includes('koln')) {
+          matchedCity = 'köln';
+        }
+
+        const data = kiezData[matchedCity];
+        state.location = matchedCity;
+        
+        // Update header search field and active name banner
+        activeLocationName.innerHTML = `
+          <span class="material-symbols-outlined text-secondary text-3xl">location_on</span>
+          <span>${data.location}</span>
+        `;
+        footerUpdateText.innerText = `Standort: ${data.location}`;
+        locationInput.value = data.location;
+        
+        // Update Weather Widget content
+        document.getElementById('weather-temp').innerText = data.weather.temp;
+        document.getElementById('weather-condition').innerText = data.weather.condition;
+        document.getElementById('weather-wind').innerText = data.weather.wind;
+        document.getElementById('weather-humidity').innerText = data.weather.humidity;
+        
+        let wIcon = 'cloud';
+        if (data.weather.icon === 'sunny') wIcon = 'sunny';
+        else if (data.weather.icon === 'partly_cloudy_day') wIcon = 'partly_cloudy_day';
+        else if (data.weather.icon === 'rainy') wIcon = 'rainy';
+        else if (data.weather.icon === 'cloudy') wIcon = 'cloud';
+        
+        const wIconEl = document.getElementById('weather-icon');
+        wIconEl.innerText = wIcon;
+        wIconEl.className = `material-symbols-outlined text-6xl ${data.weather.icon === 'sunny' ? 'text-amber-500' : data.weather.icon === 'partly_cloudy_day' ? 'text-amber-500/80' : 'text-primary'}`;
+        
+        const wUpdatedEl = document.getElementById('weather-updated');
+        wUpdatedEl.innerText = "Gerade aktualisiert";
+        
+        // Render 3-Day Forecast
+        const forecastEl = document.getElementById('weather-forecast');
+        forecastEl.innerHTML = '';
+        data.weather.forecast.forEach(fc => {
+          let fcIcon = 'cloud';
+          if (fc.icon === 'sunny') fcIcon = 'sunny';
+          else if (fc.icon === 'partly_cloudy_day') fcIcon = 'partly_cloudy_day';
+          else if (fc.icon === 'rainy') fcIcon = 'rainy';
+          
+          forecastEl.innerHTML += `
+            <div class="text-center">
+              <div class="text-[10px] uppercase font-bold text-on-surface-variant dark:text-zinc-500 mb-1">${fc.day}</div>
+              <span class="material-symbols-outlined text-2xl mb-1 block ${fc.icon === 'sunny' ? 'text-amber-500' : 'text-primary'}">${fcIcon}</span>
+              <div class="text-xs font-bold text-slate-800 dark:text-zinc-200">${fc.temp}</div>
+            </div>
+          `;
+        });
+
+        // Helper function to render Lists of POIs
+        const renderPOIList = (listId, places) => {
+          const listEl = document.getElementById(listId);
+          listEl.innerHTML = '';
+          
+          places.forEach((place, index) => {
+            const hasImage = place.img && place.img.length > 0;
+            const imgHtml = hasImage 
+              ? `<img src="${place.img}" alt="${place.name}" class="w-16 h-16 rounded-xl object-cover border border-outline-variant/10 dark:border-zinc-800 shadow-sm shrink-0"/>`
+              : `<div class="w-16 h-16 rounded-xl bg-slate-100 dark:bg-zinc-800 flex items-center justify-center text-on-surface-variant/40 dark:text-zinc-600 border border-outline-variant/10 dark:border-zinc-800 shrink-0">
+                   <span class="material-symbols-outlined text-3xl">storefront</span>
+                 </div>`;
+            
+            // Build stars
+            const ratingNum = parseFloat(place.rating);
+            let stars = '';
+            for (let i = 1; i <= 5; i++) {
+              if (i <= Math.round(ratingNum)) {
+                stars += `<span class="material-symbols-outlined text-amber-500 text-xs">star</span>`;
+              } else {
+                stars += `<span class="material-symbols-outlined text-zinc-300 dark:text-zinc-600 text-xs">star</span>`;
+              }
+            }
+
+            // Build badges
+            let badgesHtml = '';
+            place.tags.forEach(t => {
+              badgesHtml += `<span class="inline-block bg-slate-100 dark:bg-zinc-800 text-slate-600 dark:text-zinc-300 px-2 py-0.5 rounded-md text-[10px] font-semibold">${t}</span>`;
+            });
+
+            listEl.innerHTML += `
+              <li class="flex gap-4 items-start p-3 hover:bg-slate-50 dark:hover:bg-zinc-800/40 rounded-xl transition-all duration-200 border border-transparent hover:border-outline-variant/20 dark:hover:border-zinc-800">
+                ${imgHtml}
+                <div class="flex-1 min-w-0">
+                  <div class="flex justify-between items-start gap-2">
+                    <h4 class="font-bold text-sm text-slate-800 dark:text-zinc-200 truncate">${place.name}</h4>
+                    <span class="text-xs font-bold text-secondary dark:text-secondary shrink-0">${place.dist}</span>
+                  </div>
+                  <p class="text-xs text-on-surface-variant dark:text-zinc-400 mt-0.5 truncate">${place.category}</p>
+                  <div class="flex items-center gap-1.5 mt-1">
+                    <span class="flex items-center">${stars}</span>
+                    <span class="text-[10px] text-outline dark:text-zinc-500 font-medium">(${place.reviews})</span>
+                  </div>
+                  <div class="flex flex-wrap gap-1 mt-2">
+                    ${badgesHtml}
+                  </div>
+                </div>
+              </li>
+            `;
+          });
+        };
+
+        // Render POI sections
+        renderPOIList('wellness-list', data.pois.wellness);
+        renderPOIList('gaming-list', data.pois.gaming);
+        renderPOIList('food-list', data.pois.food);
+        renderPOIList('tech-list', data.pois.tech);
+      };
+
+      // Dynamic Toggle Switches generation in sidebar
+      const initToggles = () => {
+        sidebarToggles.innerHTML = '';
+        widgetInfo.forEach(widget => {
+          const isVisible = state.visibility[widget.id];
+          const toggleHtml = `
+            <div class="flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-slate-50 dark:hover:bg-zinc-800/50 transition-colors">
+              <div class="flex items-center gap-3 text-on-surface-variant dark:text-zinc-300">
+                <span class="material-symbols-outlined">${widget.icon}</span>
+                <span class="text-sm font-medium">${widget.label}</span>
+              </div>
+              <div class="flex items-center">
+                <input type="checkbox" id="toggle-${widget.id}" data-target="${widget.id}" class="toggle-input hidden" ${isVisible ? 'checked' : ''}/>
+                <label for="toggle-${widget.id}" class="toggle-track">
+                  <div class="toggle-thumb"></div>
+                </label>
+              </div>
+            </div>
+          `;
+          sidebarToggles.insertAdjacentHTML('beforeend', toggleHtml);
+        });
+
+        // Set up event listeners for the generated toggles
+        widgetInfo.forEach(widget => {
+          const checkbox = document.getElementById(`toggle-${widget.id}`);
+          checkbox.addEventListener('change', (e) => {
+            const targetId = e.target.dataset.target;
+            const isChecked = e.target.checked;
+            const card = document.getElementById(`card-${targetId}`);
+            
+            state.visibility[targetId] = isChecked;
+            
+            if (card) {
+              if (isChecked) {
+                card.style.display = 'block';
+                // Simple fade in
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(10px)';
+                setTimeout(() => {
+                  card.style.opacity = '1';
+                  card.style.transform = 'translateY(0)';
+                }, 10);
+              } else {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(10px)';
+                setTimeout(() => {
+                  card.style.display = 'none';
+                }, 250);
+              }
+            }
+          });
+        });
+      };
+
+      // Set Card Visibility & Sorting Order based on State
+      const applyLayoutState = () => {
+        // Sort/reorder children of grid
+        state.order.forEach(id => {
+          const card = document.getElementById(`card-${id}`);
+          if (card) {
+            dashboardGrid.appendChild(card);
+            card.style.display = state.visibility[id] ? 'block' : 'none';
+          }
+        });
+      };
+
+      // Theme toggle function
+      const applyTheme = (isDark) => {
+        state.dark = isDark;
+        darkmodeToggle.checked = isDark;
+        
+        if (isDark) {
+          document.documentElement.classList.add('dark');
+          themeIcon.innerText = 'dark_mode';
+        } else {
+          document.documentElement.classList.remove('dark');
+          themeIcon.innerText = 'light_mode';
+        }
+      };
+
+      // Save layout configuration to localStorage
+      const saveState = () => {
+        const currentOrder = Array.from(dashboardGrid.children).map(card => card.dataset.id);
+        state.order = currentOrder;
+        localStorage.setItem('stitchDashboardState_Antigravity', JSON.stringify(state));
+        showToast("Layout-Einstellungen erfolgreich gespeichert!");
+      };
+
+      // Reset layout configuration to defaults
+      const resetState = () => {
+        localStorage.removeItem('stitchDashboardState_Antigravity');
+        state = {
+          order: ['weather', 'wellness', 'gaming', 'food', 'tech'],
+          visibility: {
+            weather: true,
+            wellness: true,
+            gaming: true,
+            food: true,
+            tech: true
+          },
+          dark: true,
+          location: "berlin"
+        };
+        applyTheme(state.dark);
+        applyLayoutState();
+        initToggles();
+        updateLocationContent("Berlin");
+        showToast("Dashboard auf Standard zurückgesetzt.", "info");
+      };
+
+      // Handle location form submission
+      locationForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const val = locationInput.value.trim();
+        if (val.length === 0) {
+          showToast("Bitte gib eine PLZ oder Stadt ein.", "error");
+          return;
+        }
+        updateLocationContent(val);
+        showToast(`Informationen geladen für "${val}"!`);
+      });
+
+      // Handle Geolocation Simulation
+      geolocationBtn.addEventListener('click', () => {
+        showToast("Frage Browser-Standort ab...", "info");
+        
+        if (!navigator.geolocation) {
+          showToast("Geolocation wird von diesem Browser nicht unterstützt.", "error");
+          // Fallback to random simulation
+          setTimeout(() => {
+            const cities = ["München", "Hamburg", "Köln"];
+            const randomCity = cities[Math.floor(Math.random() * cities.length)];
+            updateLocationContent(randomCity);
+            showToast(`Simulierter Standort: ${randomCity}`);
+          }, 1000);
+          return;
+        }
+
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            // Mocking geolocation search results depending on coords or giving random nearby city
+            // For a nice effect, let's random-select Hamburg or Cologne or Munich
+            const simulatedCities = ["München", "Hamburg", "Köln"];
+            const simCity = simulatedCities[Math.floor(Math.random() * simulatedCities.length)];
+            updateLocationContent(simCity);
+            showToast(`Standort ermittelt: ${simCity}!`);
+          },
+          (error) => {
+            console.warn("Standortabfrage abgelehnt/fehlgeschlagen. Verwende Simulator-Fallback.");
+            setTimeout(() => {
+              const fallbackCities = ["München", "Hamburg", "Köln"];
+              const randomCity = fallbackCities[Math.floor(Math.random() * fallbackCities.length)];
+              updateLocationContent(randomCity);
+              showToast(`Erlaubnis verweigert. Simulierter Standort: ${randomCity}`, "info");
+            }, 1000);
+          }
+        );
+      });
+
+      // DarkMode switch event listener
+      darkmodeToggle.addEventListener('change', (e) => {
+        applyTheme(e.target.checked);
+      });
+
+      // Save button click
+      saveLayoutBtn.addEventListener('click', saveState);
+
+      // Reset button click
+      resetLayoutBtn.addEventListener('click', resetState);
+
+      // Mobile Settings Drawer toggle panel
+      const toggleMobileDrawer = () => {
+        const isCollapsed = sidebarPanel.classList.contains('translate-x-[-100%]');
+        if (isCollapsed) {
+          sidebarPanel.classList.remove('translate-x-[-100%]');
+          sidebarOverlay.classList.remove('opacity-0', 'pointer-events-none');
+        } else {
+          sidebarPanel.classList.add('translate-x-[-100%]');
+          sidebarOverlay.classList.add('opacity-0', 'pointer-events-none');
+        }
+      };
+
+      settingsMobileBtn.addEventListener('click', toggleMobileDrawer);
+      sidebarOverlay.addEventListener('click', toggleMobileDrawer);
+
+      // Initialize Dashboard Setup
+      loadState();
+      applyTheme(state.dark);
+      applyLayoutState();
+      initToggles();
+      updateLocationContent(state.location);
+
+      // Initialize SortableJS
+      new Sortable(dashboardGrid, {
+        animation: 200,
+        handle: '.drag-handle',
+        ghostClass: 'sortable-ghost',
+        onEnd: () => {
+          // Temporarily save to active state (not LocalStorage until Save is clicked)
+          const currentOrder = Array.from(dashboardGrid.children).map(card => card.dataset.id);
+          state.order = currentOrder;
+          showToast("Layout geändert! Klicke 'Layout speichern' zum Behalten.", "info");
+        }
+      });
+    });
+  </script>
+</body>
+</html>

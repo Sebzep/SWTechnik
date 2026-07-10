@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Google Stitch - Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@600;700&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-primary-fixed-variant": "#3323cc",
+                      "on-error-container": "#93000a",
+                      "secondary": "#9f402d",
+                      "inverse-on-surface": "#f0f1f2",
+                      "surface-container-lowest": "#ffffff",
+                      "tertiary-fixed": "#ffdf9a",
+                      "on-surface-variant": "#464555",
+                      "secondary-fixed-dim": "#ffb4a5",
+                      "surface-container-low": "#f3f4f5",
+                      "on-background": "#191c1d",
+                      "surface-variant": "#e1e3e4",
+                      "surface-bright": "#f8f9fa",
+                      "on-secondary": "#ffffff",
+                      "background": "#f8f9fa",
+                      "surface-dim": "#d9dadb",
+                      "on-primary": "#ffffff",
+                      "secondary-fixed": "#ffdad3",
+                      "outline": "#777587",
+                      "surface-container": "#edeeef",
+                      "on-tertiary-container": "#ffd77d",
+                      "on-error": "#ffffff",
+                      "surface-tint": "#4d44e3",
+                      "inverse-primary": "#c3c0ff",
+                      "surface-container-high": "#e7e8e9",
+                      "primary-container": "#4f46e5",
+                      "on-tertiary-fixed": "#251a00",
+                      "secondary-container": "#fd876f",
+                      "on-tertiary": "#ffffff",
+                      "primary-fixed-dim": "#c3c0ff",
+                      "error": "#ba1a1a",
+                      "on-secondary-fixed-variant": "#802918",
+                      "surface-container-highest": "#e1e3e4",
+                      "tertiary": "#5d4500",
+                      "inverse-surface": "#2e3132",
+                      "on-primary-fixed": "#0f0069",
+                      "on-secondary-container": "#732010",
+                      "primary-fixed": "#e2dfff",
+                      "on-secondary-fixed": "#3e0500",
+                      "tertiary-fixed-dim": "#f7be1d",
+                      "primary": "#3525cd",
+                      "on-primary-container": "#dad7ff",
+                      "surface": "#f8f9fa",
+                      "on-surface": "#191c1d",
+                      "error-container": "#ffdad6",
+                      "tertiary-container": "#7a5c00",
+                      "on-tertiary-fixed-variant": "#5a4300",
+                      "outline-variant": "#c7c4d8"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px",
+                      "2xl": "16px"
+              },
+              "spacing": {
+                      "margin-desktop": "40px",
+                      "margin-mobile": "16px",
+                      "max-width": "1440px",
+                      "unit": "8px",
+                      "gutter": "24px"
+              },
+              "fontFamily": {
+                      "headline-lg": [
+                              "Outfit"
+                      ],
+                      "headline-lg-mobile": [
+                              "Outfit"
+                      ],
+                      "headline-md": [
+                              "Outfit"
+                      ],
+                      "label-md": [
+                              "Inter"
+                      ],
+                      "label-sm": [
+                              "Inter"
+                      ],
+                      "body-lg": [
+                              "Inter"
+                      ],
+                      "body-md": [
+                              "Inter"
+                      ]
+              },
+              "fontSize": {
+                      "headline-lg": [
+                              "32px",
+                              {
+                                      "lineHeight": "40px",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "headline-lg-mobile": [
+                              "24px",
+                              {
+                                      "lineHeight": "32px",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "headline-md": [
+                              "20px",
+                              {
+                                      "lineHeight": "28px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "label-md": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "letterSpacing": "0.01em",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "label-sm": [
+                              "12px",
+                              {
+                                      "lineHeight": "16px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "body-lg": [
+                              "18px",
+                              {
+                                      "lineHeight": "28px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "body-md": [
+                              "16px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "400"
+                              }
+                      ]
+              }
+            },
+          }
+        }
+    </script>
+<style>
+        body {
+            background-color: theme('colors.background');
+            color: theme('colors.on-background');
+        }
+        .dark body {
+            background-color: #1a1a1a;
+            color: #f0f0f0;
+        }
+        .card-shadow {
+            box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.05);
+        }
+        .dark .card-shadow {
+            box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.3);
+        }
+        .card-shadow:hover {
+            box-shadow: 0px 8px 30px rgba(0, 0, 0, 0.08);
+            transform: translateY(-2px);
+        }
+        .dark .card-shadow:hover {
+            box-shadow: 0px 8px 30px rgba(0, 0, 0, 0.4);
+        }
+        .sortable-ghost {
+            opacity: 0.4;
+            background-color: theme('colors.surface-container');
+        }
+        .dark .sortable-ghost {
+            background-color: #2a2a2a;
+        }
+        /* Custom toggle switch */
+        .toggle-checkbox:checked {
+            right: 0;
+            border-color: theme('colors.primary');
+        }
+        .dark .toggle-checkbox:checked {
+            border-color: theme('colors.primary-fixed');
+        }
+        .toggle-checkbox:checked + .toggle-label {
+            background-color: theme('colors.primary');
+        }
+        .dark .toggle-checkbox:checked + .toggle-label {
+            background-color: theme('colors.primary-fixed');
+        }
+        .toggle-checkbox {
+            right: 0;
+            z-index: 1;
+            border-color: #e2e8f0;
+            transition: all 0.3s;
+        }
+        .dark .toggle-checkbox {
+            border-color: #4a4a4a;
+        }
+        .toggle-label {
+            width: 3rem;
+            height: 1.5rem;
+            background-color: theme('colors.surface-variant');
+            border-radius: 9999px;
+            transition: all 0.3s;
+        }
+        .dark .toggle-label {
+            background-color: #333;
+        }
+        .toggle-thumb {
+            width: 1.25rem;
+            height: 1.25rem;
+            background-color: white;
+            border-radius: 50%;
+            top: 0.125rem;
+            left: 0.125rem;
+            transition: all 0.3s;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .toggle-checkbox:checked ~ .toggle-thumb {
+            transform: translateX(1.5rem);
+        }
+    </style>
+</head>
+<body class="font-body-md text-body-md pt-16 dark:bg-gray-900 dark:text-gray-100">
+<!-- TopNavBar -->
+<header class="bg-surface dark:bg-gray-900 fixed top-0 left-0 w-full z-50 flex justify-between items-center px-margin-desktop h-16 border-b border-outline-variant dark:border-gray-800">
+<div class="flex items-center gap-4">
+<h1 class="text-headline-md font-headline-md font-bold text-primary dark:text-primary-fixed-dim">Stitch</h1>
+</div>
+<div class="flex-1 max-w-md mx-8 flex items-center bg-surface-container dark:bg-gray-800 rounded-full px-4 py-2 border border-outline-variant dark:border-gray-700 focus-within:border-primary dark:focus-within:border-primary-fixed-dim transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant dark:text-gray-400 mr-2" data-icon="search">search</span>
+<input class="bg-transparent border-none outline-none w-full text-on-surface dark:text-gray-100 focus:ring-0 placeholder-on-surface-variant dark:placeholder-gray-500" placeholder="Zip code, e.g. 10115 Berlin" type="text" value="10115 Berlin"/>
+</div>
+<div class="flex items-center gap-4 text-on-surface-variant dark:text-gray-400">
+<button class="hover:bg-surface-container-high dark:hover:bg-gray-800 transition-colors p-2 rounded-full active:scale-95 duration-100">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+<button class="hover:bg-surface-container-high dark:hover:bg-gray-800 transition-colors p-2 rounded-full active:scale-95 duration-100">
+<img alt="User profile" class="w-8 h-8 rounded-full object-cover" data-alt="A detailed close-up portrait of a cheerful person reflecting a modern light-mode aesthetic. Soft natural lighting highlights a friendly expression, set against a clean, warm white background. The image feels authentic, professional, and inviting, suitable for a user profile picture." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBIuAZaL3PMFo1kE0j-QmjRwP-G7fqRa4q1ydBC3uXjem1gijXBNqeuTmXnJkalLR0rGJGRehX2JH1TaCdjxbAo1bBpWktM8Ykr7IPz239QjxqEwDpO1mSKHL-cBkbLxwfMqcCSMhmkGq7F1GeiFcQYzQli4_R2QTrfHCP1SUIzMRrPmOhSPaSmuUlosIVH_F7CDVdxmqgF6aL7-hcpMq110OHgabPvdq2NVY8g1WsfFSRvlAkbOMw"/>
+</button>
+</div>
+</header>
+<div class="flex max-w-[1440px] mx-auto min-h-[calc(100vh-64px)]">
+<!-- SideNavBar -->
+<aside class="bg-surface dark:bg-gray-900 border-r border-outline-variant dark:border-gray-800 fixed left-0 top-16 h-[calc(100vh-64px)] w-64 z-40 flex flex-col hidden md:flex">
+<div class="p-6 border-b border-outline-variant dark:border-gray-800 border-dashed">
+<div class="flex items-center gap-3 mb-2">
+<img alt="Neighborhood Settings" class="w-10 h-10 rounded-lg object-cover" data-alt="A stylized neighborhood map icon or illustration in a modern urban folk style. Warm colors, clean vector lines, light mode background. Depicts a sense of community and locality." src="https://lh3.googleusercontent.com/aida-public/AB6AXuATxrnZjLezFXBV5aX6FEDImBuKhCFRWTnY87QM32xdWKyHemSrS4iQieJ2xDOPpKTUmTsFykekg_cVgFRM4PDBUr97iAudy3w6RYv_OUNdFC2P2XPYwnGZUbIXxx9h6WuLD-pNj79mSxDxwPJA4UFPEA35mCxmlNVWLoPfDHxnxIQPhMip-cjPTyu-lTM-UugSIYcGrhK-8mdAGFd8Z43dzuYglnq-QJ5z_5hjxOvzDgCrL8ooq5A"/>
+<div>
+<h2 class="font-headline-md text-label-md font-semibold text-primary dark:text-primary-fixed-dim">Dashboard Settings</h2>
+<p class="font-label-sm text-label-sm text-on-surface-variant dark:text-gray-400">Customize your view</p>
+</div>
+</div>
+</div>
+<nav class="flex-1 py-4 flex flex-col gap-2 px-2" id="sidebar-toggles">
+<!-- Toggles will be generated here by JS -->
+</nav>
+<div class="p-4 border-t border-outline-variant dark:border-gray-800">
+<button class="w-full bg-primary dark:bg-primary-fixed-dim text-on-primary dark:text-gray-900 py-2 px-4 rounded-full font-label-md hover:bg-surface-tint dark:hover:bg-primary transition-colors">Save Layout</button>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="flex-1 md:ml-64 p-margin-mobile md:p-margin-desktop">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-gutter" id="dashboard-grid">
+<!-- Cards will be generated here -->
+<!-- Weather Card -->
+<div class="bg-surface-container-lowest dark:bg-gray-800 rounded-2xl p-4 card-shadow transition-all duration-300 relative border-t-2 border-dashed border-outline-variant dark:border-gray-700" data-id="weather" id="card-weather">
+<div class="flex justify-between items-start mb-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary dark:text-primary-fixed-dim text-2xl" data-icon="cloud">cloud</span>
+<h3 class="font-headline-md text-headline-md text-on-surface dark:text-gray-100">Weather</h3>
+</div>
+<span class="material-symbols-outlined text-outline dark:text-gray-500 cursor-grab drag-handle hover:text-primary dark:hover:text-primary-fixed-dim transition-colors" data-icon="drag_indicator">drag_indicator</span>
+</div>
+<div class="flex items-center justify-between mb-6">
+<div>
+<div class="text-4xl font-headline-lg text-primary dark:text-primary-fixed-dim">18°C</div>
+<div class="text-on-surface-variant dark:text-gray-400 font-body-md">Partly Cloudy</div>
+</div>
+<div class="text-right">
+<div class="text-on-surface-variant dark:text-gray-400">Berlin, Mitte</div>
+<div class="text-sm text-outline dark:text-gray-500">Updated 10m ago</div>
+</div>
+</div>
+<div class="grid grid-cols-3 gap-2 border-t border-outline-variant dark:border-gray-700 pt-4">
+<div class="text-center">
+<div class="text-label-sm text-on-surface-variant dark:text-gray-400 mb-1">Today</div>
+<span class="material-symbols-outlined text-secondary dark:text-secondary-fixed-dim mb-1" data-icon="partly_cloudy_day">partly_cloudy_day</span>
+<div class="font-label-md dark:text-gray-200">18° / 12°</div>
+</div>
+<div class="text-center">
+<div class="text-label-sm text-on-surface-variant dark:text-gray-400 mb-1">Tomorrow</div>
+<span class="material-symbols-outlined text-tertiary-fixed-dim mb-1" data-icon="sunny">sunny</span>
+<div class="font-label-md dark:text-gray-200">22° / 14°</div>
+</div>
+<div class="text-center">
+<div class="text-label-sm text-on-surface-variant dark:text-gray-400 mb-1">Friday</div>
+<span class="material-symbols-outlined text-primary dark:text-primary-fixed-dim mb-1" data-icon="rainy">rainy</span>
+<div class="font-label-md dark:text-gray-200">16° / 10°</div>
+</div>
+</div>
+</div>
+<!-- Restaurants Card -->
+<div class="bg-surface-container-lowest dark:bg-gray-800 rounded-2xl p-4 card-shadow transition-all duration-300 relative border-t-2 border-dashed border-outline-variant dark:border-gray-700" data-id="restaurants" id="card-restaurants">
+<div class="flex justify-between items-start mb-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary dark:text-secondary-fixed-dim text-2xl" data-icon="restaurant">restaurant</span>
+<h3 class="font-headline-md text-headline-md text-on-surface dark:text-gray-100">Restaurants</h3>
+</div>
+<span class="material-symbols-outlined text-outline dark:text-gray-500 cursor-grab drag-handle hover:text-primary dark:hover:text-primary-fixed-dim transition-colors" data-icon="drag_indicator">drag_indicator</span>
+</div>
+<ul class="space-y-4">
+<li class="flex items-center justify-between border-b border-outline-variant dark:border-gray-700 pb-2 last:border-0 last:pb-0">
+<div>
+<div class="font-label-md text-on-surface dark:text-gray-200">Monsieur Vuong</div>
+<div class="text-label-sm text-on-surface-variant dark:text-gray-400 flex items-center gap-1">
+<span class="material-symbols-outlined text-tertiary-fixed-dim text-sm" data-icon="star" data-weight="fill">star</span> 4.8 (850) • Vietnamese
+                                </div>
+</div>
+<div class="text-right">
+<div class="text-sm font-semibold text-secondary dark:text-secondary-fixed-dim">0.4 km</div>
+</div>
+</li>
+<li class="flex items-center justify-between border-b border-outline-variant dark:border-gray-700 pb-2 last:border-0 last:pb-0">
+<div>
+<div class="font-label-md text-on-surface dark:text-gray-200">The Bird</div>
+<div class="text-label-sm text-on-surface-variant dark:text-gray-400 flex items-center gap-1">
+<span class="material-symbols-outlined text-tertiary-fixed-dim text-sm" data-icon="star" data-weight="fill">star</span> 4.6 (1.2k) • Burger
+                                </div>
+</div>
+<div class="text-right">
+<div class="text-sm font-semibold text-secondary dark:text-secondary-fixed-dim">1.2 km</div>
+</div>
+</li>
+<li class="flex items-center justify-between pb-2 last:border-0 last:pb-0">
+<div>
+<div class="font-label-md text-on-surface dark:text-gray-200">Katz Orange</div>
+<div class="text-label-sm text-on-surface-variant dark:text-gray-400 flex items-center gap-1">
+<span class="material-symbols-outlined text-tertiary-fixed-dim text-sm" data-icon="star" data-weight="fill">star</span> 4.7 (620) • Modern European
+                                </div>
+</div>
+<div class="text-right">
+<div class="text-sm font-semibold text-secondary dark:text-secondary-fixed-dim">0.8 km</div>
+</div>
+</li>
+</ul>
+</div>
+<!-- Cafes Card -->
+<div class="bg-surface-container-lowest dark:bg-gray-800 rounded-2xl p-4 card-shadow transition-all duration-300 relative border-t-2 border-dashed border-outline-variant dark:border-gray-700" data-id="cafes" id="card-cafes">
+<div class="flex justify-between items-start mb-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-tertiary-container dark:text-tertiary-fixed text-2xl" data-icon="local_cafe">local_cafe</span>
+<h3 class="font-headline-md text-headline-md text-on-surface dark:text-gray-100">Cafes</h3>
+</div>
+<span class="material-symbols-outlined text-outline dark:text-gray-500 cursor-grab drag-handle hover:text-primary dark:hover:text-primary-fixed-dim transition-colors" data-icon="drag_indicator">drag_indicator</span>
+</div>
+<div class="space-y-4">
+<div class="flex gap-4 items-center">
+<img alt="Bonanza Coffee" class="w-16 h-16 rounded-lg object-cover" data-alt="A bright, aesthetic photo of a modern third-wave coffee shop interior. White marble counters, warm wood accents, soft natural light streaming in. A barista is carefully pouring latte art. Modern urban folk style, inviting and cozy." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBe_Z2hYvn7V6HNsRCGQFQvmHlw875A9pOTBck5jVDXXTZJFu1xA8JUkwLygGviMiWKHJSz_x3aY7uqnBxjx8I7QLShEUlD3NFywbrtuo9iabVeu1sXDD5Aq24omUMskKfawk0zg9FSUJq9WC4rEnnK1cuOZEjFA--xh9b0A6K399GjtaACAQUwANVvKQvxeR11jkmGVogqdtVyk7IumwXrvcFOniVg9SyX2fmada5z02pKs_QPk0k"/>
+<div class="flex-1">
+<div class="font-label-md text-on-surface dark:text-gray-200">Bonanza Coffee</div>
+<div class="text-label-sm text-on-surface-variant dark:text-gray-400 mb-1">0.3 km • Specialty Coffee</div>
+<span class="inline-block bg-primary/10 dark:bg-primary/20 text-primary dark:text-primary-fixed-dim px-2 py-0.5 rounded-full text-xs font-semibold">Laptop friendly</span>
+</div>
+</div>
+<div class="flex gap-4 items-center">
+<img alt="Five Elephant" class="w-16 h-16 rounded-lg object-cover" data-alt="A close-up shot of a rustic cafe table with a steaming cup of coffee and a slice of cheesecake. Warm ambient lighting, cozy atmosphere, light mode aesthetic. Hints of green plants in the background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCyggOTNZmNZ160ph78tZQ-AayYXzHWvmf_TufzY4YrpR62CWfdup7wns6XfRzdIndzCMUMbLQekp4QGmqqtXeb3rA-3J382szGD7l5G9BiqGPMx7vBMcTDI22P93zVt8AaoxIdsuCQUtpeXRHd2Ji9kqqxNT0SEHnRF6yCA5kAwxrsOf_OeQLzfixinJBQkLyhDLM9lQY4OM-_uUi1bgcFbJUBoOP71JNhfYet9zRMLHqdPWgAhkQ"/>
+<div class="flex-1">
+<div class="font-label-md text-on-surface dark:text-gray-200">Five Elephant</div>
+<div class="text-label-sm text-on-surface-variant dark:text-gray-400 mb-1">0.7 km • Roastery &amp; Cake</div>
+<span class="inline-block bg-secondary/10 dark:bg-secondary/20 text-secondary dark:text-secondary-fixed-dim px-2 py-0.5 rounded-full text-xs font-semibold">Great Cheesecake</span>
+</div>
+</div>
+<div class="flex gap-4 items-center">
+<div class="w-16 h-16 rounded-lg bg-surface-container dark:bg-gray-700 flex items-center justify-center">
+<span class="material-symbols-outlined text-outline dark:text-gray-400" data-icon="storefront">storefront</span>
+</div>
+<div class="flex-1">
+<div class="font-label-md text-on-surface dark:text-gray-200">Distrikt Coffee</div>
+<div class="text-label-sm text-on-surface-variant dark:text-gray-400 mb-1">1.1 km • Brunch &amp; Coffee</div>
+<span class="inline-block bg-tertiary-container/10 dark:bg-tertiary-fixed/20 text-tertiary-container dark:text-tertiary-fixed-dim px-2 py-0.5 rounded-full text-xs font-semibold">Outdoor seating</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Events Card -->
+<div class="bg-surface-container-lowest dark:bg-gray-800 rounded-2xl p-4 card-shadow transition-all duration-300 relative border-t-2 border-dashed border-outline-variant dark:border-gray-700" data-id="events" id="card-events">
+<div class="flex justify-between items-start mb-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary dark:text-primary-fixed-dim text-2xl" data-icon="event">event</span>
+<h3 class="font-headline-md text-headline-md text-on-surface dark:text-gray-100">Events</h3>
+</div>
+<span class="material-symbols-outlined text-outline dark:text-gray-500 cursor-grab drag-handle hover:text-primary dark:hover:text-primary-fixed-dim transition-colors" data-icon="drag_indicator">drag_indicator</span>
+</div>
+<div class="space-y-3">
+<div class="p-3 bg-surface dark:bg-gray-700 rounded-xl border border-outline-variant dark:border-gray-600 hover:border-primary dark:hover:border-primary-fixed-dim transition-colors cursor-pointer flex gap-3">
+<div class="bg-primary/10 dark:bg-primary/20 text-primary dark:text-primary-fixed-dim w-12 h-12 rounded-lg flex flex-col items-center justify-center shrink-0">
+<span class="text-xs font-semibold uppercase">Oct</span>
+<span class="text-lg font-bold">12</span>
+</div>
+<div>
+<div class="font-label-md text-on-surface dark:text-gray-200">Flohmarkt am Mauerpark</div>
+<div class="text-label-sm text-on-surface-variant dark:text-gray-400 flex items-center gap-1 mt-1">
+<span class="material-symbols-outlined text-sm" data-icon="location_on">location_on</span> Mauerpark • 10:00 AM
+                                 </div>
+</div>
+</div>
+<div class="p-3 bg-surface dark:bg-gray-700 rounded-xl border border-outline-variant dark:border-gray-600 hover:border-primary dark:hover:border-primary-fixed-dim transition-colors cursor-pointer flex gap-3">
+<div class="bg-secondary/10 dark:bg-secondary/20 text-secondary dark:text-secondary-fixed-dim w-12 h-12 rounded-lg flex flex-col items-center justify-center shrink-0">
+<span class="text-xs font-semibold uppercase">Oct</span>
+<span class="text-lg font-bold">14</span>
+</div>
+<div>
+<div class="font-label-md text-on-surface dark:text-gray-200">Open Air Cinema: Classic</div>
+<div class="text-label-sm text-on-surface-variant dark:text-gray-400 flex items-center gap-1 mt-1">
+<span class="material-symbols-outlined text-sm" data-icon="location_on">location_on</span> Freiluftkino • 8:00 PM
+                                 </div>
+</div>
+</div>
+</div>
+<button class="w-full mt-4 py-2 border border-outline-variant dark:border-gray-600 rounded-full text-primary dark:text-primary-fixed-dim font-label-md hover:bg-surface-container dark:hover:bg-gray-700 transition-colors">View All Events</button>
+</div>
+</div>
+</main>
+</div>
+<!-- Footer -->
+<footer class="bg-surface-container dark:bg-gray-800 fixed bottom-0 left-0 w-full z-30 flex justify-between items-center px-margin-desktop py-2 border-t-2 border-dashed border-outline-variant dark:border-gray-700 md:hidden">
+<span class="font-label-sm text-label-sm text-on-surface-variant dark:text-gray-400">Last updated: Just now</span>
+<div class="flex gap-4">
+<a class="text-on-surface-variant dark:text-gray-400 font-label-sm hover:text-primary dark:hover:text-primary-fixed-dim transition-colors" href="#">Privacy</a>
+<a class="text-on-surface-variant dark:text-gray-400 font-label-sm hover:text-primary dark:hover:text-primary-fixed-dim transition-colors" href="#">Terms</a>
+</div>
+</footer>
+<!-- SortableJS -->
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+<script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const tabs = [
+                { id: 'weather', label: 'Weather', icon: 'cloud' },
+                { id: 'restaurants', label: 'Restaurants', icon: 'restaurant' },
+                { id: 'cafes', label: 'Cafes', icon: 'local_cafe' },
+                { id: 'events', label: 'Events', icon: 'event' }
+            ];
+
+            const sidebarToggles = document.getElementById('sidebar-toggles');
+            const dashboardGrid = document.getElementById('dashboard-grid');
+
+            // Default State
+            let state = {
+                order: ['weather', 'restaurants', 'cafes', 'events'],
+                visibility: {
+                    weather: true,
+                    restaurants: true,
+                    cafes: true,
+                    events: true
+                }
+            };
+
+            // Load State
+            const savedState = localStorage.getItem('stitchDashboardState');
+            if (savedState) {
+                try {
+                    state = JSON.parse(savedState);
+                } catch (e) {
+                    console.error("Failed to parse state", e);
+                }
+            }
+
+            // Render Toggles
+            tabs.forEach(tab => {
+                const isVisible = state.visibility[tab.id];
+                const toggleHtml = `
+                    <div class="flex items-center justify-between px-4 py-3 rounded-lg hover:bg-surface-container dark:hover:bg-gray-800 transition-colors">
+                        <div class="flex items-center gap-3 text-on-surface-variant dark:text-gray-300">
+                            <span class="material-symbols-outlined" data-icon="${tab.icon}">${tab.icon}</span>
+                            <span class="font-label-md">${tab.label}</span>
+                        </div>
+                        <div class="relative inline-block w-12 mr-2 align-middle select-none transition duration-200 ease-in">
+                            <input type="checkbox" id="toggle-${tab.id}" data-target="${tab.id}" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white dark:bg-gray-300 border-4 appearance-none cursor-pointer" ${isVisible ? 'checked' : ''}/>
+                            <label for="toggle-${tab.id}" class="toggle-label block overflow-hidden h-6 rounded-full cursor-pointer"></label>
+                            <div class="toggle-thumb absolute cursor-pointer pointer-events-none"></div>
+                        </div>
+                    </div>
+                `;
+                sidebarToggles.insertAdjacentHTML('beforeend', toggleHtml);
+            });
+
+            // Apply Order and Visibility
+            state.order.forEach(id => {
+                const card = document.getElementById(`card-${id}`);
+                if (card) {
+                    dashboardGrid.appendChild(card); // Reorder
+                    card.style.display = state.visibility[id] ? 'block' : 'none';
+                }
+            });
+
+            // Save State Function
+            const saveState = () => {
+                const currentOrder = Array.from(dashboardGrid.children).map(card => card.dataset.id);
+                state.order = currentOrder;
+                localStorage.setItem('stitchDashboardState', JSON.stringify(state));
+            };
+
+            // Toggle Listeners
+            document.querySelectorAll('.toggle-checkbox').forEach(checkbox => {
+                checkbox.addEventListener('change', (e) => {
+                    const targetId = e.target.dataset.target;
+                    const isChecked = e.target.checked;
+                    const card = document.getElementById(`card-${targetId}`);
+                    
+                    state.visibility[targetId] = isChecked;
+                    saveState();
+
+                    if (card) {
+                        if (isChecked) {
+                            card.style.display = 'block';
+                            // Simple fade in
+                            card.style.opacity = '0';
+                            setTimeout(() => card.style.opacity = '1', 10);
+                        } else {
+                            card.style.opacity = '0';
+                            setTimeout(() => card.style.display = 'none', 300);
+                        }
+                    }
+                });
+            });
+
+            // Initialize Sortable
+            new Sortable(dashboardGrid, {
+                animation: 150,
+                handle: '.drag-handle',
+                ghostClass: 'sortable-ghost',
+                onEnd: () => {
+                    saveState();
+                }
+            });
+        });
+    </script>
+</body></html>
