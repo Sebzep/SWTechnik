@@ -1,1 +1,0 @@
-Erstelle als Erstes eine index.html und eine style.css (mit Tailwind via CDN), die das in Punkt 2 und 3.1 beschriebene Layout umsetzen. Die Kacheln sollen erst mal schicke HTML-Platzhalter mit Icons sein, und das Einstellungs-Menü soll funktionierende Toggle-Schalter haben.

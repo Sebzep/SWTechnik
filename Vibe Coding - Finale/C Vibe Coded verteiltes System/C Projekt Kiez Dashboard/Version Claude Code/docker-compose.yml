@@ -1,0 +1,29 @@
+services:
+  data-service:
+    build: ./data-service
+    ports:
+      - "8000:8000"
+    networks:
+      - dashboard-net
+
+  api-gateway:
+    build: ./api-gateway
+    ports:
+      - "3000:3000"
+    depends_on:
+      - data-service
+    networks:
+      - dashboard-net
+
+  frontend:
+    image: nginx:alpine
+    ports:
+      - "8080:80"
+    volumes:
+      - ./frontend:/usr/share/nginx/html:ro
+    networks:
+      - dashboard-net
+
+networks:
+  dashboard-net:
+    driver: bridge

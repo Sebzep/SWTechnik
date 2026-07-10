@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kiez-Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-100 text-slate-900 min-h-screen">
+  <div class="max-w-5xl mx-auto px-4 py-10">
+    <header class="mb-8 text-center">
+      <h1 class="text-3xl font-bold text-slate-800">Kiez-Dashboard</h1>
+      <p class="text-slate-500 mt-1">Wetter und lokale Highlights auf einen Blick</p>
+    </header>
+
+    <div class="flex flex-col sm:flex-row gap-3 justify-center items-stretch sm:items-center mb-4">
+      <input
+        id="zip-input"
+        type="text"
+        placeholder="PLZ oder Ort, z. B. 12047 oder Muenchen"
+        class="w-full sm:w-64 rounded-xl border border-slate-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+      />
+      <button
+        id="load-button"
+        class="rounded-xl bg-indigo-600 text-white font-medium px-6 py-2 hover:bg-indigo-700 transition-colors"
+      >
+        Load Dashboard
+      </button>
+    </div>
+
+    <p id="status" class="text-center text-sm text-slate-500 mb-6 h-5"></p>
+
+    <div id="city-image-wrap" class="mb-4 hidden">
+      <img id="city-image" class="w-full max-h-64 object-cover rounded-2xl shadow-md" alt="" />
+    </div>
+
+    <div id="results-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+  </div>
+
+  <script src="./app.js"></script>
+</body>
+</html>
