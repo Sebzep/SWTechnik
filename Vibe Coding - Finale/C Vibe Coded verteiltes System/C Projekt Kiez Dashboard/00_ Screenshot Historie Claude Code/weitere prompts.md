@@ -10,9 +10,12 @@ Ich nach Test:
 
 Die Ergebnisse sollten anklickbar sein. Kannst du auch Bilder reinladen also wenn z.b. die Plz von München aufgerufen wird, dass ein Bild von München erscheint? Kannst du auch Nach Orten suchen nicht nur Plz
 
-
+Ich nach Test:
  münchen hat angeblich -1 grad, es sind aber 17 wie kommt es zu diesem ergebnis?
 -> Mock Daten wurden verwendet, Open Meteo wird nun angebunden
+
+Ich nach erneutem Test:
+bei augsburg kam ein ergebnis sauna vulkan, woher kommt das? google sagt das gibt es nicht, bitte auch nach Sterne Bewertungen sortieren
 
 APIs:
 ZIPPOPOTAM_URL = "http://api.zippopotam.us/de/{plz}"

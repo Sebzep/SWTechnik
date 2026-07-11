@@ -1,5 +1,5 @@
 import json
-import random
+import math
 import re
 from urllib.parse import quote
 
@@ -41,17 +41,34 @@ WEATHER_CODE_DESCRIPTIONS = {
     99: "Gewitter mit starkem Hagel",
 }
 
-PLACE_POOLS = {
-    "wellness": ["Therme Oase", "Spa Lotus", "Schwimmbad Nordpark", "Sauna Vulkan", "Wellness Refugium", "Bade-Oase Sued"],
-    "gaming": ["Brettspielcafe Wuerfel", "Tabletop Arena", "Pen & Paper Lounge", "Dice & Decks", "Nerd Nook", "Retro Arcade Ecke"],
-    "food": ["Thai Garden", "Pho Saigon", "Bangkok Kitchen", "Saigon Street", "Thai Orchid", "Mekong Bistro"],
-    "work": ["Coworking Hub", "IT Base Camp", "Cafe Ruhepol", "Deskspace Nord", "Silent Office Lounge", "Byte Cafe"],
-}
-
 ZIPPOPOTAM_URL = "http://api.zippopotam.us/de/{plz}"
 GEOCODING_URL = "https://geocoding-api.open-meteo.com/v1/search"
 FORECAST_URL = "https://api.open-meteo.com/v1/forecast"
 WIKIPEDIA_SUMMARY_URL = "https://en.wikipedia.org/api/rest_v1/page/summary/{title}"
+OVERPASS_URL = "https://overpass-api.de/api/interpreter"
+
+SEARCH_RADIUS_M = 10000
+
+CATEGORY_OVERPASS_FILTERS = {
+    "wellness": [
+        'node["leisure"="spa"]',
+        'node["leisure"="swimming_pool"]["access"!="private"]',
+        'node["amenity"="public_bath"]',
+    ],
+    "gaming": [
+        'node["shop"="games"]',
+        'node["leisure"="amusement_arcade"]',
+    ],
+    "food": [
+        'node["amenity"="restaurant"]["cuisine"~"thai|vietnamese|asian",i]',
+    ],
+    "work": [
+        'node["amenity"="coworking_space"]',
+        'node["amenity"="cafe"]["internet_access"]',
+    ],
+}
+
+EARTH_RADIUS_KM = 6371.0
 
 REQUEST_HEADERS = {"User-Agent": "Kiez-Dashboard-SchoolProject/1.0 (SWTechnik Vibe-Coding Uebungsprojekt)"}
 
@@ -63,6 +80,47 @@ def normalize_umlaut_spelling(text: str) -> str:
     for digraph, replacement in UMLAUT_DIGRAPHS:
         result = re.sub(digraph, replacement, result, flags=re.IGNORECASE)
     return result
+
+
+def haversine_km(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
+    phi1, phi2 = math.radians(lat1), math.radians(lat2)
+    dphi = math.radians(lat2 - lat1)
+    dlambda = math.radians(lon2 - lon1)
+    a = math.sin(dphi / 2) ** 2 + math.cos(phi1) * math.cos(phi2) * math.sin(dlambda / 2) ** 2
+    return 2 * EARTH_RADIUS_KM * math.asin(math.sqrt(a))
+
+
+def fetch_nearby_places(type_key: str, lat: float, lon: float):
+    filters = CATEGORY_OVERPASS_FILTERS.get(type_key)
+    if filters is None:
+        return None
+
+    around = f"(around:{SEARCH_RADIUS_M},{lat},{lon})"
+    statements = "".join(f"{f}{around};" for f in filters)
+    query = f"[out:json][timeout:25];({statements});out center 10;"
+
+    try:
+        resp = requests.post(OVERPASS_URL, data={"data": query}, headers=REQUEST_HEADERS, timeout=30)
+        resp.raise_for_status()
+    except requests.RequestException as exc:
+        raise HTTPException(status_code=502, detail="Orte-Dienst momentan nicht erreichbar.") from exc
+
+    elements = json.loads(resp.content).get("elements", [])
+    candidates = []
+    seen_names = set()
+    for el in elements:
+        name = el.get("tags", {}).get("name")
+        if not name or name in seen_names:
+            continue
+        el_lat = el.get("lat", (el.get("center") or {}).get("lat"))
+        el_lon = el.get("lon", (el.get("center") or {}).get("lon"))
+        if el_lat is None or el_lon is None:
+            continue
+        seen_names.add(name)
+        candidates.append({"name": name, "distance_km": round(haversine_km(lat, lon, el_lat, el_lon), 1)})
+
+    candidates.sort(key=lambda place: place["distance_km"])
+    return candidates[:3]
 
 
 def geocode_city(name: str):
@@ -137,15 +195,11 @@ def get_weather(lat: float = Query(...), lon: float = Query(...)):
 
 
 @app.get("/api/v1/places")
-def get_places(type: str, city: str = Query(...)):
-    pool = PLACE_POOLS.get(type.lower())
-    if pool is None:
+def get_places(type: str, lat: float = Query(...), lon: float = Query(...)):
+    places = fetch_nearby_places(type.lower(), lat, lon)
+    if places is None:
         raise HTTPException(status_code=404, detail=f"Unbekannte Kategorie: {type}")
-
-    rng = random.Random(f"{city.lower()}:{type.lower()}")
-    names = rng.sample(pool, k=3)
-    ratings = [round(rng.uniform(3.5, 5.0), 1) for _ in names]
-    return [{"name": name, "rating": rating} for name, rating in zip(names, ratings)]
+    return places
 
 
 @app.get("/api/v1/image")

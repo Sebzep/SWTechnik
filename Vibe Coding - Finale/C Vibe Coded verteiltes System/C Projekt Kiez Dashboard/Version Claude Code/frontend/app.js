@@ -86,6 +86,22 @@ function buildPlacesCard(city, type, places) {
   title.textContent = CATEGORY_LABELS[type] || type;
   card.appendChild(title);
 
+  if (places === null) {
+    const unavailable = document.createElement('p');
+    unavailable.className = 'text-sm text-amber-600';
+    unavailable.textContent = 'Orte-Dienst momentan nicht erreichbar. Bitte spaeter erneut versuchen.';
+    card.appendChild(unavailable);
+    return card;
+  }
+
+  if (places.length === 0) {
+    const empty = document.createElement('p');
+    empty.className = 'text-sm text-slate-400';
+    empty.textContent = 'Keine Ergebnisse in der Naehe gefunden.';
+    card.appendChild(empty);
+    return card;
+  }
+
   const list = document.createElement('ul');
   list.className = 'flex flex-col gap-2';
   for (const place of places) {
@@ -100,11 +116,11 @@ function buildPlacesCard(city, type, places) {
     const name = document.createElement('span');
     name.textContent = place.name;
 
-    const rating = document.createElement('span');
-    rating.className = 'font-medium text-amber-500';
-    rating.textContent = `★ ${place.rating}`;
+    const distance = document.createElement('span');
+    distance.className = 'font-medium text-indigo-500';
+    distance.textContent = `${place.distance_km} km`;
 
-    link.append(name, rating);
+    link.append(name, distance);
     li.appendChild(link);
     list.appendChild(li);
   }

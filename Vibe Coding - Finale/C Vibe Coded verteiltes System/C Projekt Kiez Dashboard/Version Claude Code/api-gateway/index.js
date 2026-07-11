@@ -16,6 +16,22 @@ async function fetchJson(url) {
   return body;
 }
 
+// Overpass (used for places lookups) only allows 2 concurrent queries per client.
+const OVERPASS_CONCURRENCY = 2;
+
+async function mapWithConcurrencyLimit(items, limit, fn) {
+  const results = new Array(items.length);
+  let next = 0;
+  async function worker() {
+    while (next < items.length) {
+      const i = next++;
+      results[i] = await fn(items[i]);
+    }
+  }
+  await Promise.all(Array.from({ length: limit }, worker));
+  return results;
+}
+
 app.get('/gateway/dashboard-data', async (req, res) => {
   const { query } = req.query;
   if (!query) {
@@ -29,12 +45,15 @@ app.get('/gateway/dashboard-data', async (req, res) => {
     const [weather, image, placeEntries] = await Promise.all([
       fetchJson(`${DATA_SERVICE_URL}/api/v1/weather?lat=${location.lat}&lon=${location.lon}`),
       fetchJson(`${DATA_SERVICE_URL}/api/v1/image?city=${encodeURIComponent(city)}`),
-      Promise.all(
-        PLACE_TYPES.map(async (type) => [
-          type,
-          await fetchJson(`${DATA_SERVICE_URL}/api/v1/places?type=${type}&city=${encodeURIComponent(city)}`),
-        ])
-      ),
+      mapWithConcurrencyLimit(PLACE_TYPES, OVERPASS_CONCURRENCY, async (type) => {
+        try {
+          const places = await fetchJson(`${DATA_SERVICE_URL}/api/v1/places?type=${type}&lat=${location.lat}&lon=${location.lon}`);
+          return [type, places];
+        } catch (err) {
+          console.error(`places lookup failed for ${type}:`, err.message);
+          return [type, null];
+        }
+      }),
     ]);
 
     res.json({
